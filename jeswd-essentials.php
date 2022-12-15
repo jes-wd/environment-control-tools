@@ -10,100 +10,108 @@ License:        GPL2
 WC tested up to: 6.5.1
 */
 
-// add a menu page in the settings menu
-function jeswd_essentials_menu() {
-    add_options_page(
-        'JESWD Essentials',
-        'JESWD Essentials',
-        'manage_options',
-        'jeswd-essentials',
-        'jeswd_essentials_options_page'
-    );
-}
+require plugin_dir_path( __FILE__ ) . 'includes/admin-page.php';
 
-// add the menu page
-add_action( 'admin_menu', 'jeswd_essentials_menu' );
-
-// add the settings page
-function jeswd_essentials_options_page() {
-    ?>
-    <div class="wrap">
-        <h1>JESWD Essentials</h1>
-        <p>Here are some useful functions for JES-WD</p>
-    </div>
-    <?php
-    // allow the user to set a production site url
-    jeswd_essentials_production_site_url();
-
-    
-
-}
-
-// allow the user to set a production site url
-function jeswd_essentials_production_site_url() {
-    ?>
-    <h2>Production Site URL</h2>
-    <p>Set the production site URL here. This will be used to redirect the site to the production site if the site is not in development mode.</p>
-    <form method="post" action="options.php">
-        <?php
-        settings_fields( 'jeswd-essentials-production-site-url' );
-        do_settings_sections( 'jeswd-essentials-production-site-url' );
-        ?>
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row">Production Site URL</th>
-                <td><input type="text" name="jeswd_essentials_production_site_url" value="<?php echo esc_attr( get_option( 'jeswd_essentials_production_site_url' ) ); ?>" /></td>
-            </tr>
-        </table>
-        <?php submit_button(); ?>
-    </form>
-    <?php
-}
-
-// add the settings
-function jeswd_essentials_settings() {
-    register_setting( 'jeswd-essentials-production-site-url', 'jeswd_essentials_production_site_url' );
-}
-
-// add the settings
-add_action( 'admin_init', 'jeswd_essentials_settings' );
-
-// if the current site domain name does not match the production site url, add an orange border to the <body> tag of wp-admin
-function jeswd_essentials_admin_body_class( $classes ) {
+// set var to check if the site is in development mode
+function jeswd_essentials_development_mode() {
+    $is_development = false;
     $production_site_url = get_option( 'jeswd_essentials_production_site_url' );
+
     if ( $production_site_url ) {
         $production_site_url = parse_url( $production_site_url );
         $production_site_url = $production_site_url['host'];
         $current_site_url = parse_url( site_url() );
         $current_site_url = $current_site_url['host'];
+
         if ( $production_site_url != $current_site_url ) {
-            $classes .= ' jeswd-essentials-admin-body-class';
+            $is_development = true;
         }
     }
+
+    return $is_development;
+}
+
+$is_development = jeswd_essentials_development_mode();
+
+// if the current site domain name does not match the production site url, add an orange border to the <body> tag of wp-admin
+function jeswd_essentials_body_class( $classes) {
+        if ( jeswd_essentials_development_mode() ) {
+            $classes .= ' jeswd-essentials-admin-body-class';
+        }
+
     return $classes;
 }
 
 // add the body class
-add_filter( 'admin_body_class', 'jeswd_essentials_admin_body_class' );
+add_filter( 'admin_body_class', 'jeswd_essentials_body_class' );
+// also add to the frontend
+add_filter( 'body_class', 'jeswd_essentials_body_class' );
 
 // add the css
-function jeswd_essentials_admin_body_class_css() {
+function jeswd_essentials_body_class_css() {
     ?>
     <style>
-        body.jeswd-essentials-admin-body-class::before {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            content: '';
-            z-index: 999999;
-            border: 3px solid orange !important;
+        body.jeswd-essentials-admin-body-class #wpadminbar {
+           background: #2271b1 !important;
         }
     </style>
     <?php
 }
 
 // add the css
-add_action( 'admin_head', 'jeswd_essentials_admin_body_class_css' );
+add_action( 'admin_head', 'jeswd_essentials_body_class_css' );
+// also add to the frontend
+add_action( 'wp_head', 'jeswd_essentials_body_class_css' );
 
+// change the favicon to the JES-WD favicon
+function jeswd_essentials_favicon() {
+    if (jeswd_essentials_development_mode()) {
+        // change the wp setting for the favicon
+        // update_option( 'site_icon', 0 );
+        echo '<link rel="shortcut icon" href="' . plugin_dir_url( __FILE__ ) . 'jeswd-favicon.png" />';
+    }
+}
+
+// add the favicon
+add_action( 'login_head', 'jeswd_essentials_favicon' );
+add_action( 'admin_head', 'jeswd_essentials_favicon' );
+add_action( 'wp_head', 'jeswd_essentials_favicon' );
+
+// install and activate the Disable Emails plugin
+// function jeswd_essentials_install_disable_emails() {
+//     $plugin = 'disable-emails/disable-emails.php';
+//     $plugin_file = WP_PLUGIN_DIR . '/' . $plugin;
+
+//     if ( ! file_exists( $plugin_file ) ) {
+//         $plugin = 'https://downloads.wordpress.org/plugin/disable-emails.zip';
+//         $plugin_file = download_url( $plugin );
+
+//         if ( is_wp_error( $plugin_file ) ) {
+//             error_log( $plugin_file->get_error_message());
+
+//             return false;
+//         }
+
+//         $result = unzip_file( $plugin_file, WP_PLUGIN_DIR );
+
+//         if ( is_wp_error( $result ) ) {
+//             error_log( $result->get_error_message());
+
+//             return false;
+//         }
+
+//     }
+
+//     if ( ! is_plugin_active( $plugin ) ) {
+//         $result = activate_plugin( $plugin );
+
+//         if ( is_wp_error( $result ) ) {
+//             error_log( $result->get_error_message());
+
+//             return false;
+//         }
+//     }
+// }
+
+// // install and activate the Disable Emails plugin
+// add_action( 'admin_init', 'jeswd_essentials_install_disable_emails' );
