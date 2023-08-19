@@ -5,6 +5,8 @@ class JESWD_Settings {
     public function __construct() {
         add_action('admin_menu', [$this, 'add_menu_page']);
         add_action('admin_init', [$this, 'handle_form_submission']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
+        add_action('admin_head', [$this, 'init_color_picker']);
     }
 
     public function add_menu_page() {
@@ -17,6 +19,16 @@ class JESWD_Settings {
         );
     }
 
+    public function enqueue_admin_scripts($hook) {
+        // Check if we're on the right admin page
+        if ('settings_page_jeswd-essentials' !== $hook) {
+            return;
+        }
+
+        wp_enqueue_style('wp-color-picker');
+        wp_enqueue_script('wp-color-picker');
+    }
+
     public function render_options_page() {
 ?>
         <div class="wrap">
@@ -26,11 +38,38 @@ class JESWD_Settings {
                 wp_nonce_field('jeswd_essentials_form_action', 'jeswd_essentials_form_nonce');
                 $this->render_production_site_url_form();
                 $this->render_discourage_search_engines_option();
+                $this->render_admin_bar_color_option();
                 $this->render_plugins_options_form();
                 submit_button();
                 ?>
             </form>
         </div>
+    <?php
+    }
+
+    public function render_admin_bar_color_option() {
+        $admin_bar_color = get_option('jeswde_admin_bar_color', '#2271b1'); // default color
+
+    ?>
+        <table class="form-table">
+            <tr>
+                <th scope="row">Admin Bar Color</th>
+                <td>
+                    <input type="text" name="jeswde_admin_bar_color" value="<?php echo esc_attr($admin_bar_color); ?>" class="jeswd-color-field" />
+                </td>
+            </tr>
+        </table>
+    <?php
+    }
+
+    public function init_color_picker() {
+        wp_enqueue_script('jquery');
+    ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                jQuery('.jeswd-color-field').wpColorPicker();
+            });
+        </script>
     <?php
     }
 
@@ -125,6 +164,12 @@ class JESWD_Settings {
                 update_option('jeswde_discourage_search_engines', 'yes');
             } else {
                 update_option('jeswde_discourage_search_engines', 'no');
+            }
+
+            // admin bar color
+            if (isset($_POST['jeswde_admin_bar_color'])) {
+                $admin_bar_color = sanitize_text_field($_POST['jeswde_admin_bar_color']);
+                update_option('jeswde_admin_bar_color', $admin_bar_color);
             }
         }
     }

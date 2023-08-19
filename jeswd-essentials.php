@@ -67,10 +67,13 @@ class JESWD_Essentials {
         if (!$this->is_development) {
             return;
         }
+
+        // Fetch the color from the WordPress database
+        $admin_bar_color = get_option('jeswde_admin_bar_color', '#2271b1'); // Fallback to #2271b1 if not set
 ?>
         <style>
             body.jeswd-essentials-admin-body-class #wpadminbar {
-                background: #2271b1 !important;
+                background: <?php echo esc_attr($admin_bar_color); ?> !important;
             }
         </style>
 <?php
