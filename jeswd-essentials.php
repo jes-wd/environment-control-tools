@@ -53,6 +53,7 @@ class JESWD_Essentials {
         add_action('admin_init', [$this, 'activate_or_disable_plugins']);
 
         add_filter('plugin_action_links', [$this, 'modify_plugin_action_links'], 10, 4);
+        add_action('init', [$this, 'update_search_engine_visibility']);
     }
 
     public function add_body_class($classes) {
@@ -129,15 +130,30 @@ class JESWD_Essentials {
             unset($actions['activate']);
             unset($actions['deactivate']);
 
-            // Add custom text
-            $actions['custom'] = "<span style='color: #555;'>Controlled by JESWD Essentials</span>";
-
+            // get activated state
+            $is_active = is_plugin_active($plugin_file);
+            $active_state_text = $is_active ? 'Activated' : 'Deactivated';
             // Add link to JESWD Essentials settings page
             $settings_link = admin_url('options-general.php?page=jeswd-essentials');
-            $actions['jeswd_settings'] = "<a href='{$settings_link}'>JESWD Settings</a>";
+            // Add custom text
+            $actions['custom'] = "<span style='color: #555;'>{$active_state_text} by <a href='{$settings_link}'>JESWD Essentials</a></span>";
         }
 
         return $actions;
+    }
+
+    public function update_search_engine_visibility() {
+        if ($this->is_development) {
+            // If it's development mode, set the blog_public option to 0 (discourage search engines)
+            if (get_option('blog_public') != 0) {
+                update_option('blog_public', 0);
+            }
+        } else {
+            // If it's production mode, set the blog_public option to 1 (allow search engines)
+            if (get_option('blog_public') != 1) {
+                update_option('blog_public', 1);
+            }
+        }
     }
 }
 
