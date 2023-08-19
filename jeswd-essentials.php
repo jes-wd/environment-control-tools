@@ -27,11 +27,11 @@ class JESWD_Essentials {
         if (!$this->production_site_url) {
             return true;
         }
-        
+
         if ($_SERVER['HTTP_HOST'] == $this->production_site_url) {
             return false;
         }
-        
+
         if (strpos($_SERVER['HTTP_HOST'], $this->production_site_url) !== false) {
             return true;
         }
@@ -42,7 +42,7 @@ class JESWD_Essentials {
     private function add_hooks() {
         add_filter('admin_body_class', [$this, 'add_body_class']);
         add_filter('body_class', [$this, 'add_body_class']);
-        
+
         add_action('admin_head', [$this, 'body_class_css']);
         add_action('wp_head', [$this, 'body_class_css']);
 
@@ -51,6 +51,8 @@ class JESWD_Essentials {
         add_action('wp_head', [$this, 'add_favicon']);
 
         add_action('admin_init', [$this, 'activate_or_disable_plugins']);
+
+        add_filter('plugin_action_links', [$this, 'modify_plugin_action_links'], 10, 4);
     }
 
     public function add_body_class($classes) {
@@ -84,24 +86,59 @@ class JESWD_Essentials {
         if (!$this->is_development) {
             return;
         }
-        
-        $disable_emails = 'disable-emails/disable-emails.php';
-        if (!is_plugin_active($disable_emails)) {
-            $result = activate_plugin($disable_emails);
-            if (is_wp_error($result)) {
-                error_log($result->get_error_message());
+
+        error_log('jeswde: activate_or_disable_plugins');
+
+        $plugins_to_activate = get_option('jeswde_plugins_to_activate', []);
+        $plugins_to_deactivate = get_option('jeswde_plugins_to_deactivate', []);
+
+        error_log('jeswde: plugins_to_activate: ' . print_r($plugins_to_activate, true));
+        error_log('jeswde: plugins_to_deactivate: ' . print_r($plugins_to_deactivate, true));
+
+        // Activate plugins
+        foreach ($plugins_to_activate as $plugin) {
+            if (!is_plugin_active($plugin)) {
+                $result = activate_plugin($plugin);
+                if (is_wp_error($result)) {
+                    error_log($result->get_error_message());
+                }
             }
         }
 
-        $post_smtp = 'post-smtp/postman-smtp.php';
-        if (is_plugin_active($post_smtp)) {
-            $result = deactivate_plugins($post_smtp);
-            if (is_wp_error($result)) {
-                error_log($result->get_error_message());
+        // Deactivate plugins
+        foreach ($plugins_to_deactivate as $plugin) {
+            error_log('jeswde: deactivating ' . $plugin);
+
+            if (is_plugin_active($plugin)) {
+                $result = deactivate_plugins($plugin);
+                if (is_wp_error($result)) {
+                    error_log($result->get_error_message());
+                }
             }
         }
+    }
+
+    public function modify_plugin_action_links($actions, $plugin_file, $plugin_data, $context) {
+        // Retrieve the list of plugins to activate/deactivate
+        $plugins_to_activate = get_option('jeswde_plugins_to_activate', []);
+        $plugins_to_deactivate = get_option('jeswde_plugins_to_deactivate', []);
+
+        // Check if current plugin is in one of the lists
+        if (in_array($plugin_file, $plugins_to_activate) || in_array($plugin_file, $plugins_to_deactivate)) {
+            // Unset activate/deactivate actions
+            unset($actions['activate']);
+            unset($actions['deactivate']);
+
+            // Add custom text
+            $actions['custom'] = "<span style='color: #555;'>Controlled by JESWD Essentials</span>";
+
+            // Add link to JESWD Essentials settings page
+            $settings_link = admin_url('options-general.php?page=jeswd-essentials');
+            $actions['jeswd_settings'] = "<a href='{$settings_link}'>JESWD Settings</a>";
+        }
+
+        return $actions;
     }
 }
 
 new JESWD_Essentials();
-
