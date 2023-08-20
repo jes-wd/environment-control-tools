@@ -142,6 +142,14 @@ class JESWD_Settings {
                 return;
             }
 
+            if (isset($_POST['jeswde_production_site_url'])) {
+                $jeswde_production_site_url = $_POST['jeswde_production_site_url'];
+                //  ensure that only a domain name or subdomain is saved, and strip all slashes and protocols
+                $jeswde_production_site_url = preg_replace('/(https?:\/\/)?(www\.)?/', '', $jeswde_production_site_url);
+        
+                update_option('jeswde_production_site_url', base64_encode($jeswde_production_site_url));
+            }
+
             // plugin activation/deactivation
             $plugins_to_activate = [];
             $plugins_to_deactivate = [];
