@@ -25,14 +25,17 @@ class JESWD_Essentials {
 
     private function check_development_mode() {
         if (!$this->production_site_url) {
-            return true;
-        }
-
-        if ($_SERVER['HTTP_HOST'] == $this->production_site_url) {
             return false;
         }
 
-        if (strpos($_SERVER['HTTP_HOST'], $this->production_site_url) !== false) {
+        // Remove the 'www.' prefix if present
+        $current_host = str_replace('www.', '', $_SERVER['HTTP_HOST']);
+
+        if ($current_host == $this->production_site_url) {
+            return false;
+        }
+
+        if (strpos($current_host, $this->production_site_url) !== false) {
             return true;
         }
 
@@ -58,7 +61,7 @@ class JESWD_Essentials {
 
     public function add_body_class($classes) {
         if ($this->is_development) {
-            $classes .= ' jeswd-essentials-admin-body-class';
+            $classes[] = 'jeswd-essentials-admin-body-class';
         }
         return $classes;
     }
@@ -91,13 +94,13 @@ class JESWD_Essentials {
             return;
         }
 
-        error_log('jeswde: activate_or_disable_plugins');
+        // error_log('jeswde: activate_or_disable_plugins');
 
         $plugins_to_activate = get_option('jeswde_plugins_to_activate', []);
         $plugins_to_deactivate = get_option('jeswde_plugins_to_deactivate', []);
 
-        error_log('jeswde: plugins_to_activate: ' . print_r($plugins_to_activate, true));
-        error_log('jeswde: plugins_to_deactivate: ' . print_r($plugins_to_deactivate, true));
+        // error_log('jeswde: plugins_to_activate: ' . print_r($plugins_to_activate, true));
+        // error_log('jeswde: plugins_to_deactivate: ' . print_r($plugins_to_deactivate, true));
 
         // Activate plugins
         foreach ($plugins_to_activate as $plugin) {
@@ -111,12 +114,12 @@ class JESWD_Essentials {
 
         // Deactivate plugins
         foreach ($plugins_to_deactivate as $plugin) {
-            error_log('jeswde: deactivating ' . $plugin);
+            // error_log('jeswde: deactivating ' . $plugin);
 
             if (is_plugin_active($plugin)) {
                 $result = deactivate_plugins($plugin);
                 if (is_wp_error($result)) {
-                    error_log($result->get_error_message());
+                    // error_log($result->get_error_message());
                 }
             }
         }
