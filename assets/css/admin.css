@@ -1,0 +1,21 @@
+.jeswde-favicon-container {
+    display: flex;
+}
+
+.jeswde-favicon-container input {
+    display: inline-block;
+    height: fit-content;
+    margin-right: 15px;
+}
+
+#jeswde-plugin-options-table tr {
+    border: 1px solid #ccc;
+}
+
+#jeswde-plugin-options-table th, #jeswde-plugin-options-table td {
+    padding: 10px;
+}
+
+#jeswde-plugin-options-table h4 {
+    margin: 0 0 0.33em 0;
+}
