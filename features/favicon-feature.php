@@ -1,6 +1,6 @@
 <?php
 
-namespace JESWD_Essentials;
+namespace EnvironmentControlTools;
 
 class Favicon_Feature {
     private $is_development;
@@ -23,12 +23,12 @@ class Favicon_Feature {
         $current_site_icon = get_option('site_icon');
 
         // Save the current site icon to our custom option, if it's not already saved
-        if (false === get_option('jeswd_original_site_icon') && $current_site_icon) {
-            update_option('jeswd_original_site_icon', $current_site_icon);
+        if (false === get_option('ect_original_site_icon') && $current_site_icon) {
+            update_option('ect_original_site_icon', $current_site_icon);
         }
 
         // Get the attachment ID of our uploaded favicon
-        $our_favicon_attachment_id = get_option('jeswde_dev_favicon');
+        $our_favicon_attachment_id = get_option('ect_dev_favicon');
 
         // If we have an uploaded favicon, set it as the site icon
         if ($our_favicon_attachment_id) {
@@ -38,12 +38,12 @@ class Favicon_Feature {
 
     private function restore_original_favicon() {
         // Retrieve the original site_icon saved in our custom option
-        $original_site_icon = get_option('jeswd_original_site_icon');
+        $original_site_icon = get_option('ect_original_site_icon');
 
         // If we have an original site icon saved, restore it
         if ($original_site_icon) {
             update_option('site_icon', $original_site_icon);
-            delete_option('jeswd_original_site_icon'); // Optional: delete our custom option after restoring
+            delete_option('ect_original_site_icon'); // Optional: delete our custom option after restoring
         }
     }
 }

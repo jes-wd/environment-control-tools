@@ -1,6 +1,6 @@
 <?php
 
-namespace JESWD_Essentials;
+namespace EnvironmentControlTools;
 
 class Search_Engine_Visibility_Feature {
     private $is_development;
@@ -12,6 +12,11 @@ class Search_Engine_Visibility_Feature {
 
     private function add_hooks() {
         add_action('init', [$this, 'update_search_engine_visibility']);
+
+        if ($this->is_development) {
+            add_action('admin_init', [$this, 'disable_search_engine_option']);
+            add_action('admin_footer-options-reading.php', [$this, 'inject_custom_message']);
+        }
     }
 
     public function update_search_engine_visibility() {
@@ -25,4 +30,35 @@ class Search_Engine_Visibility_Feature {
             }
         }
     }
+
+    public function disable_search_engine_option() {
+        add_filter('pre_option_blog_public', function ($value) {
+            return 0; // force the option value to be "0" for development mode
+        });
+
+        add_filter('option_blog_public', function ($value) {
+            return 0; // force the option value to be "0" for development mode
+        });
+    }
+
+    public function inject_custom_message() {
+        $message = "This option is being controlled by Environment Control Tools.";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const el = document.querySelector('label[for=\"blog_public\"]');
+                const checkbox = document.querySelector('#blog_public');
+                if (el) {
+                    const span = document.createElement('span');
+                    span.textContent = '{$message}';
+                    span.style.color = 'red';
+                    span.style.display = 'block';
+                    span.style.marginTop = '10px';
+                    el.parentNode.appendChild(span);
+                }
+                if (checkbox) {
+                    checkbox.disabled = true;
+                }
+            });
+        </script>";
+    }    
 }

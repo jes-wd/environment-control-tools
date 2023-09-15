@@ -1,6 +1,6 @@
 <?php
 
-namespace JESWD_Essentials;
+namespace EnvironmentControlTools;
 
 class Body_Class_Feature {
     private $is_development;
@@ -21,9 +21,9 @@ class Body_Class_Feature {
     public function add_body_class($classes) {
         if ($this->is_development) {
             if (is_array($classes)) {
-                $classes[] = 'jeswd-essentials-admin-body-class';
+                $classes[] = 'environment-control-tools-admin-body-class';
             } else if (is_string($classes)) {
-                $classes .= ' jeswd-essentials-admin-body-class';
+                $classes .= ' environment-control-tools-admin-body-class';
             }
         }
         return $classes;
@@ -35,11 +35,11 @@ class Body_Class_Feature {
         }
 
         // Fetch the color from the WordPress database
-        $admin_bar_color = get_option('jeswde_admin_bar_color', '#2271b1'); // Fallback to #2271b1 if not set
+        $admin_bar_color = get_option('ect_admin_bar_color', '#2271b1'); // Fallback to #2271b1 if not set
 
         echo '
             <style>
-                body.jeswd-essentials-admin-body-class #wpadminbar {
+                body.environment-control-tools-admin-body-class #wpadminbar {
                     background: ' . esc_attr($admin_bar_color) . ' !important;
                 }
             </style>

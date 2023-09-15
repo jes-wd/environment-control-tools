@@ -1,6 +1,6 @@
 <?php
 
-namespace JESWD_Essentials;
+namespace EnvironmentControlTools;
 
 class Plugin_Management_Feature {
     private $is_development;
@@ -17,9 +17,9 @@ class Plugin_Management_Feature {
 
     public function activate_or_disable_plugins() {
         // Decide which option keys to use
-        $option_suffix = $this->is_development ? '_dev' : '_non_dev';
-        $plugins_to_activate_key = 'jeswde_plugins_to_activate' . $option_suffix;
-        $plugins_to_deactivate_key = 'jeswde_plugins_to_deactivate' . $option_suffix;
+        $option_suffix = $this->is_development ? '_dev' : '_production';
+        $plugins_to_activate_key = 'ect_plugins_to_activate' . $option_suffix;
+        $plugins_to_deactivate_key = 'ect_plugins_to_deactivate' . $option_suffix;
     
         // Fetch the options
         $plugins_to_activate = get_option($plugins_to_activate_key, []);
@@ -48,9 +48,9 @@ class Plugin_Management_Feature {
 
     public function modify_plugin_action_links($actions, $plugin_file, $plugin_data, $context) {
         // Decide which option keys to use based on the development mode
-        $option_suffix = $this->is_development ? '_dev' : '_non_dev';
-        $plugins_to_activate_key = 'jeswde_plugins_to_activate' . $option_suffix;
-        $plugins_to_deactivate_key = 'jeswde_plugins_to_deactivate' . $option_suffix;
+        $option_suffix = $this->is_development ? '_dev' : '_production';
+        $plugins_to_activate_key = 'ect_plugins_to_activate' . $option_suffix;
+        $plugins_to_deactivate_key = 'ect_plugins_to_deactivate' . $option_suffix;
     
         // Fetch the options
         $plugins_to_activate = get_option($plugins_to_activate_key, []);
@@ -62,8 +62,8 @@ class Plugin_Management_Feature {
     
             $is_active = is_plugin_active($plugin_file);
             $active_state_text = $is_active ? 'Activated' : 'Deactivated';
-            $settings_link = admin_url('options-general.php?page=jeswd-essentials');
-            $actions['custom'] = "<span style='color: #555;'>{$active_state_text} by <a href='{$settings_link}'>JESWD Essentials</a></span>";
+            $settings_link = admin_url('options-general.php?page=environment-control-tools');
+            $actions['custom'] = "<span style='color: #555;'>{$active_state_text} by <a href='{$settings_link}'>Environment Control Tools</a></span>";
         }
     
         return $actions;

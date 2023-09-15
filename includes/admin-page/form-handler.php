@@ -1,11 +1,11 @@
 <?php
 
-namespace JESWD_Essentials;
+namespace EnvironmentControlTools;
 
 class Form_Handler {
 
     public function handle_form_submission() {
-        if (!isset($_POST['jeswd_essentials_form_nonce']) || !wp_verify_nonce($_POST['jeswd_essentials_form_nonce'], 'jeswd_essentials_form_action')) {
+        if (!isset($_POST['ect_form_nonce']) || !wp_verify_nonce($_POST['ect_form_nonce'], 'ect_form_action')) {
             return;
         }
 
@@ -17,16 +17,16 @@ class Form_Handler {
     }
 
     private function handle_production_site_url() {
-        if (isset($_POST['jeswde_production_site_url'])) {
-            $jeswde_production_site_url = $_POST['jeswde_production_site_url'];
-            $jeswde_production_site_url = preg_replace('/(https?:\/\/)?(www\.)?/', '', $jeswde_production_site_url);
-            update_option('jeswde_production_site_url', base64_encode($jeswde_production_site_url));
+        if (isset($_POST['ect_production_site_url'])) {
+            $ect_production_site_url = $_POST['ect_production_site_url'];
+            $ect_production_site_url = preg_replace('/(https?:\/\/)?(www\.)?/', '', $ect_production_site_url);
+            update_option('ect_production_site_url', base64_encode($ect_production_site_url));
         }
     }
 
     private function handle_favicon_upload() {
-        if (isset($_FILES['jeswde_dev_favicon']) && $_FILES['jeswde_dev_favicon']['size'] > 0) {
-            $uploaded_file = $_FILES['jeswde_dev_favicon'];
+        if (isset($_FILES['ect_dev_favicon']) && $_FILES['ect_dev_favicon']['size'] > 0) {
+            $uploaded_file = $_FILES['ect_dev_favicon'];
 
             // Check for upload errors
             if ($uploaded_file['error'] === 0) {
@@ -46,20 +46,20 @@ class Form_Handler {
                     ], $file_path);
 
                     // Store the attachment ID in the WordPress option
-                    update_option('jeswde_dev_favicon', $attachment_id);
+                    update_option('ect_dev_favicon', $attachment_id);
                 }
             }
         }
     }
 
     private function handle_plugins_options() {
-        $modes = ['_dev', '_non_dev'];
+        $modes = ['_dev', '_production'];
     
         foreach ($modes as $mode_suffix) {
             $plugins_to_activate = [];
             $plugins_to_deactivate = [];
     
-            $post_key = 'jeswde_plugin_option' . $mode_suffix;
+            $post_key = 'ect_plugin_option' . $mode_suffix;
     
             if (isset($_POST[$post_key]) && is_array($_POST[$post_key])) {
                 foreach ($_POST[$post_key] as $plugin_path => $action) {
@@ -69,21 +69,21 @@ class Form_Handler {
                         $plugins_to_deactivate[] = sanitize_text_field($plugin_path);
                     }
                 }
-                update_option('jeswde_plugins_to_activate' . $mode_suffix, $plugins_to_activate);
-                update_option('jeswde_plugins_to_deactivate' . $mode_suffix, $plugins_to_deactivate);
+                update_option('ect_plugins_to_activate' . $mode_suffix, $plugins_to_activate);
+                update_option('ect_plugins_to_deactivate' . $mode_suffix, $plugins_to_deactivate);
             }
         }
     }    
 
     private function handle_search_engine_visibility() {
-        $visibility_option = isset($_POST['jeswde_discourage_search_engines']) && $_POST['jeswde_discourage_search_engines'] === 'yes' ? 'yes' : 'no';
-        update_option('jeswde_discourage_search_engines', $visibility_option);
+        $visibility_option = isset($_POST['ect_discourage_search_engines']) && $_POST['ect_discourage_search_engines'] === 'yes' ? 'yes' : 'no';
+        update_option('ect_discourage_search_engines', $visibility_option);
     }
 
     private function handle_admin_bar_color() {
-        if (isset($_POST['jeswde_admin_bar_color'])) {
-            $admin_bar_color = sanitize_text_field($_POST['jeswde_admin_bar_color']);
-            update_option('jeswde_admin_bar_color', $admin_bar_color);
+        if (isset($_POST['ect_admin_bar_color'])) {
+            $admin_bar_color = sanitize_text_field($_POST['ect_admin_bar_color']);
+            update_option('ect_admin_bar_color', $admin_bar_color);
         }
     }
 }
