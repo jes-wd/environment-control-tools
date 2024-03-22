@@ -15,7 +15,7 @@ class Search_Engine_Visibility_Feature {
 
         if ($this->is_development) {
             add_action('admin_init', [$this, 'disable_search_engine_option']);
-            add_action('admin_footer-options-reading.php', [$this, 'inject_custom_message']);
+            add_action('admin_init', [$this, 'inject_custom_message']);
         }
     }
 
@@ -42,23 +42,22 @@ class Search_Engine_Visibility_Feature {
     }
 
     public function inject_custom_message() {
-        $message = "This option is being controlled by Environment Control Tools.";
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const el = document.querySelector('label[for=\"blog_public\"]');
-                const checkbox = document.querySelector('#blog_public');
-                if (el) {
-                    const span = document.createElement('span');
-                    span.textContent = '{$message}';
-                    span.style.color = 'red';
-                    span.style.display = 'block';
-                    span.style.marginTop = '10px';
-                    el.parentNode.appendChild(span);
-                }
-                if (checkbox) {
-                    checkbox.disabled = true;
-                }
-            });
-        </script>";
+        $message = esc_html__("This option is being controlled by Environment Control Tools.", 'environment-control-tools');
+        wp_enqueue_script('jquery');
+        wp_add_inline_script('jquery', "document.addEventListener('DOMContentLoaded', function() {
+            const el = document.querySelector('label[for=\"blog_public\"]');
+            const checkbox = document.querySelector('#blog_public');
+            if (el) {
+                const span = document.createElement('span');
+                span.textContent = '{$message}';
+                span.style.color = 'red';
+                span.style.display = 'block';
+                span.style.marginTop = '10px';
+                el.parentNode.appendChild(span);
+            }
+            if (checkbox) {
+                checkbox.disabled = true;
+            }
+        });");
     }    
 }

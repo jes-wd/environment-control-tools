@@ -2,7 +2,7 @@
 Contributors: jesweb.dev
 Tags: staging, development, tools, search engine visibility, plugin control
 Requires at least: 4.6
-Tested up to: 6.3
+Tested up to: 6.4
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later

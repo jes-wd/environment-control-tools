@@ -1,8 +1,8 @@
-.ect-favicon-container {
+.jesect-favicon-container {
     display: flex;
 }
 
-.ect-favicon-container input[type="file"] {
+.jesect-favicon-container input[type="file"] {
     display: inline-block;
     height: fit-content;
     margin-right: 15px;
@@ -11,14 +11,14 @@
     padding: 4px;
 }
 
-#ect-plugin-options-table tr {
+#jesect-plugin-options-table tr {
     border: 1px solid #ccc;
 }
 
-#ect-plugin-options-table th, #ect-plugin-options-table td {
+#jesect-plugin-options-table th, #jesect-plugin-options-table td {
     padding: 10px;
 }
 
-#ect-plugin-options-table h4 {
+#jesect-plugin-options-table h4 {
     margin: 0 0 0.33em 0;
 }

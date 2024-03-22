@@ -18,8 +18,8 @@ class Plugin_Management_Feature {
     public function activate_or_disable_plugins() {
         // Decide which option keys to use
         $option_suffix = $this->is_development ? '_dev' : '_production';
-        $plugins_to_activate_key = 'ect_plugins_to_activate' . $option_suffix;
-        $plugins_to_deactivate_key = 'ect_plugins_to_deactivate' . $option_suffix;
+        $plugins_to_activate_key = 'jesect_plugins_to_activate' . $option_suffix;
+        $plugins_to_deactivate_key = 'jesect_plugins_to_deactivate' . $option_suffix;
     
         // Fetch the options
         $plugins_to_activate = get_option($plugins_to_activate_key, []);
@@ -49,8 +49,8 @@ class Plugin_Management_Feature {
     public function modify_plugin_action_links($actions, $plugin_file, $plugin_data, $context) {
         // Decide which option keys to use based on the development mode
         $option_suffix = $this->is_development ? '_dev' : '_production';
-        $plugins_to_activate_key = 'ect_plugins_to_activate' . $option_suffix;
-        $plugins_to_deactivate_key = 'ect_plugins_to_deactivate' . $option_suffix;
+        $plugins_to_activate_key = 'jesect_plugins_to_activate' . $option_suffix;
+        $plugins_to_deactivate_key = 'jesect_plugins_to_deactivate' . $option_suffix;
     
         // Fetch the options
         $plugins_to_activate = get_option($plugins_to_activate_key, []);
